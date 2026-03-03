@@ -39,7 +39,7 @@ The Layer Inflation Attack:
 
 -   Dataset: ELI5
 -   Tokens per sample: 100
--   FPR: 1%
+-   FPR: 1% (0.01)
 -   Default layers: m = 30
 -   Inflation layers: N = 5
 -   Temperature: 1.0
