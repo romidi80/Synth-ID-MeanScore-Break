@@ -52,11 +52,3 @@ TPR after attack:
 -   Gemma-7B: 0.00
 -   Mistral-7B: 0.01
 
-## Structure
-
--   Break_Synth_ID.ipynb --- Main experiments
--   110_Google_s\_LLM_Watermarking\_(2).pdf --- Reference paper
-
-## License
-
-Research and educational use only.
