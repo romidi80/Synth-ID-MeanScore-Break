@@ -1,152 +1,62 @@
-Break SynthID
-🔍 Overview
+# Break SynthID
 
-This project analyzes and empirically validates vulnerabilities in Google DeepMind’s SynthID-Text watermarking framework.
+## Overview
 
-It is based on the ICLR 2026 workshop submission:
+This project analyzes vulnerabilities in Google's SynthID-Text
+watermarking framework. It demonstrates that the mean score detection
+mechanism is intrinsically vulnerable to a Layer Inflation Attack.
 
-“Google’s LLM Watermarking System Is Intrinsically Vulnerable to Layer Inflation Attack”
+## Key Contributions
 
-The work provides:
+-   Theoretical proof that TPR@FPR is unimodal in the number of
+    tournament layers
+-   Central Limit Theorem analysis of the mean score function
+-   Black-box Layer Inflation Attack
+-   Empirical validation on multiple LLMs
 
-Theoretical analysis of SynthID-Text detection performance
+## Core Insight
 
-Proof that TPR@FPR is unimodal in tournament layers
+As the number of tournament layers increases:
 
-A black-box Layer Inflation Attack
+1.  TPR initially increases
+2.  Reaches a peak
+3.  Then decreases
+4.  Eventually converges to FPR
 
-Empirical validation across multiple LLMs
+This allows watermark removal via artificial layer inflation.
 
-🧠 Background
+## Attack Summary
 
-SynthID-Text is a production-ready watermarking system deployed in Gemini.
+The Layer Inflation Attack:
 
-It works via:
+1.  Queries the watermarked model multiple times
+2.  Collects candidate outputs
+3.  Applies additional tournament layers
+4.  Produces a final output with reduced mean score
+5.  Bypasses watermark detection
 
-Multi-layer Tournament Sampling
+## Experimental Setup
 
-Randomized g-value functions
+-   Dataset: ELI5
+-   Tokens per sample: 100
+-   FPR: 1%
+-   Default layers: m = 30
+-   Inflation layers: N = 15
+-   Temperature: 1.0
 
-A Mean Score (MS) detection function
+## Results
 
-Detection metric: TPR@FPR
+TPR after attack:
 
-This project demonstrates that the mean score detection is provably vulnerable when the number of tournament layers increases.
+-   GPT-2B: 0.05
+-   Gemma-7B: 0.00
+-   Mistral-7B: 0.01
 
-🚨 Core Vulnerability
-Theoretical Result
+## Structure
 
-Using the Central Limit Theorem:
+-   Break_Synth_ID.ipynb --- Main experiments
+-   110_Google_s\_LLM_Watermarking\_(2).pdf --- Reference paper
 
-The mean score follows a normal distribution.
-
-TPR@FPR is a function of the number of layers m.
-
-TPR initially increases.
-
-After a critical point M, TPR decreases.
-
-As m → ∞, TPR → FPR.
-
-This makes detection ineffective.
-
-🛠 Layer Inflation Attack
-
-We implement a black-box attack that:
-
-Queries a watermarked LLM multiple times.
-
-Collects 2N outputs.
-
-Applies an additional N-layer tournament.
-
-Produces a final token.
-
-Lowers mean score below detection threshold.
-
-Result
-
-On 1,000 watermarked prompts:
-
-Model	TPR After Attack
-GPT-2B	0.05
-Gemma-7B	0.00
-Mistral-7B	0.01
-
-Watermark detection collapses to near FPR=1%.
-
-📂 Project Structure
-.
-├── Break_Synth_ID.ipynb        # Main experiments
-├── 110_Google_s_LLM_Watermarking_(2).pdf  # Paper reference
-├── README.md
-⚙️ Requirements
-pip install torch numpy matplotlib transformers bert-score
-
-Optional:
-
-pip install jupyter
-🚀 Running Experiments
-
-Launch Jupyter:
-
-jupyter notebook
-
-Open:
-
-Break_Synth_ID.ipynb
-
-Run cells sequentially.
-
-📊 Experimental Setup
-
-Dataset: ELI5
-
-Tokens per sample: 100
-
-FPR: 1%
-
-Default layers: m = 30
-
-Additional inflation layers: N = 15
-
-Temperature: 1.0
-
-📈 What This Project Shows
-
-✔ SynthID-Text detection is unimodal in layers
-✔ Detection collapses under layer inflation
-✔ Vulnerability holds for Bernoulli and Uniform g-values
-✔ Attack is black-box (no key required)
-
-🔬 Related Work
-
-Scott Aaronson – Early LLM watermarking ideas
-
-Gemma: Open Models Based on Gemini Research and Technology
-
-ICLR
-
-Google
-
-🎯 Research Implications
-
-This exposes a structural weakness in:
-
-Mean-score watermark detection
-
-Multi-layer tournament sampling
-
-Current production watermark deployments
-
-It motivates:
-
-Robust detection functions
-
-Non-unimodal scoring rules
-
-Provable watermark guarantees
-
- License
+## License
 
 Research and educational use only.
