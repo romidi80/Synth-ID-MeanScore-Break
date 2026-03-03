@@ -41,7 +41,7 @@ The Layer Inflation Attack:
 -   Tokens per sample: 100
 -   FPR: 1%
 -   Default layers: m = 30
--   Inflation layers: N = 15
+-   Inflation layers: N = 5
 -   Temperature: 1.0
 
 ## Results
