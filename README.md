@@ -1,65 +1,152 @@
-# Break-Synth-ID-text
+Break SynthID
+🔍 Overview
 
-## Overview
+This project analyzes and empirically validates vulnerabilities in Google DeepMind’s SynthID-Text watermarking framework.
 
-This repository implements a **layer inflation attack** against SynthID-style tournament-based LLM watermarking ("layer inflation"). 
-The attack reduces detectability of the Mean score detector by increasing the number of tournament layers while preserving text quality (perplexity/fluency).
+It is based on the ICLR 2026 workshop submission:
 
-## Key files
+“Google’s LLM Watermarking System Is Intrinsically Vulnerable to Layer Inflation Attack”
 
-- `Synth_ID_Break.ipynb` — main notebook with experiment code, attack implementation, and evaluation.
+The work provides:
 
-## How the attack works (brief)
+Theoretical analysis of SynthID-Text detection performance
 
+Proof that TPR@FPR is unimodal in tournament layers
 
-1. The SynthID watermark uses a tournament sampling over token logits with multiple layers (depth) to bias selected tokens into a green list.
-2. The Mean score detector aggregates per-token signals across layers to produce a detection Z-score; as layers increase, the detector's mean score can be diluted.
-3. The layer inflation attack increases tournament layers (or simulates extra layers) while applying small perturbations to logits that maintain fluency but reduce the expected detection score shift.
-4. Practical implementation strategies:
-   - Inject shifted Gumbel/logistic noise to logits to cancel watermark bias.
-   - Re-sample using more tournament layers but with adjusted PRF or shifted logits.
-   - Maintain low KL divergence / perplexity by constraining per-token logit changes.
+A black-box Layer Inflation Attack
 
+Empirical validation across multiple LLMs
 
-## Usage (quick)
+🧠 Background
 
-Open `Synth_ID_Break.ipynb` in Jupyter or Colab and run the cells top-to-bottom. The notebook contains:
-- Setup and dependencies
-- Data / prompts used
-- Watermark generation + detection baseline
-- Layer inflation attack implementation
-- Evaluation scripts (Z-score, perplexity, sample outputs)
+SynthID-Text is a production-ready watermarking system deployed in Gemini.
 
-## Dependencies
+It works via:
 
-Typical Python stack used in the notebook:
-```
-python>=3.8
-numpy
-scipy
-torch
-transformers
-tqdm
-scikit-learn
-matplotlib
-seaborn
-```
+Multi-layer Tournament Sampling
 
-## Notes on reproducibility
+Randomized g-value functions
 
+A Mean Score (MS) detection function
 
-- The notebook includes random seeds for reproducibility — set seeds for NumPy, Torch, and Python `random` before running experiments.
-- If you use a proprietary LLM or API, replace the model-call cells with your provider's API wrappers and ensure deterministic sampling where possible.
-- Results may vary with model and tokenizer versions. Report exact model names and seed values when sharing results.
+Detection metric: TPR@FPR
 
+This project demonstrates that the mean score detection is provably vulnerable when the number of tournament layers increases.
 
-## Suggested next steps / experiments
+🚨 Core Vulnerability
+Theoretical Result
 
-- Sweep over number of inflated layers and measure Z-score decay.
-- Constrain KL/perplexity budget to observe trade-off curves.
-- Test on multiple models (GPT-family, LLaMA, etc.) and tokenizers.
-- Try hybrid attacks that combine noise-shifting with re-application of an independent PRF.
+Using the Central Limit Theorem:
 
-## Contact
+The mean score follows a normal distribution.
 
-If you use this code for research, please cite the notebook and contact the author for collaboration or questions.
+TPR@FPR is a function of the number of layers m.
+
+TPR initially increases.
+
+After a critical point M, TPR decreases.
+
+As m → ∞, TPR → FPR.
+
+This makes detection ineffective.
+
+🛠 Layer Inflation Attack
+
+We implement a black-box attack that:
+
+Queries a watermarked LLM multiple times.
+
+Collects 2N outputs.
+
+Applies an additional N-layer tournament.
+
+Produces a final token.
+
+Lowers mean score below detection threshold.
+
+Result
+
+On 1,000 watermarked prompts:
+
+Model	TPR After Attack
+GPT-2B	0.05
+Gemma-7B	0.00
+Mistral-7B	0.01
+
+Watermark detection collapses to near FPR=1%.
+
+📂 Project Structure
+.
+├── Break_Synth_ID.ipynb        # Main experiments
+├── 110_Google_s_LLM_Watermarking_(2).pdf  # Paper reference
+├── README.md
+⚙️ Requirements
+pip install torch numpy matplotlib transformers bert-score
+
+Optional:
+
+pip install jupyter
+🚀 Running Experiments
+
+Launch Jupyter:
+
+jupyter notebook
+
+Open:
+
+Break_Synth_ID.ipynb
+
+Run cells sequentially.
+
+📊 Experimental Setup
+
+Dataset: ELI5
+
+Tokens per sample: 100
+
+FPR: 1%
+
+Default layers: m = 30
+
+Additional inflation layers: N = 15
+
+Temperature: 1.0
+
+📈 What This Project Shows
+
+✔ SynthID-Text detection is unimodal in layers
+✔ Detection collapses under layer inflation
+✔ Vulnerability holds for Bernoulli and Uniform g-values
+✔ Attack is black-box (no key required)
+
+🔬 Related Work
+
+Scott Aaronson – Early LLM watermarking ideas
+
+Gemma: Open Models Based on Gemini Research and Technology
+
+ICLR
+
+Google
+
+🎯 Research Implications
+
+This exposes a structural weakness in:
+
+Mean-score watermark detection
+
+Multi-layer tournament sampling
+
+Current production watermark deployments
+
+It motivates:
+
+Robust detection functions
+
+Non-unimodal scoring rules
+
+Provable watermark guarantees
+
+ License
+
+Research and educational use only.
