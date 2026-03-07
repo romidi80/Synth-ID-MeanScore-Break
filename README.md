@@ -48,7 +48,7 @@ The Layer Inflation Attack:
 
 TPR after attack:
 
--   GPT-2B: 0.05
--   Gemma-7B: 0.00
--   Mistral-7B: 0.01
+-   GPT-2B: 0.15
+-   Gemma-7B: 0.13
+-   Mistral-7B: 0.16
 
