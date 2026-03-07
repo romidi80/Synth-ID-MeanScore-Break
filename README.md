@@ -13,6 +13,7 @@ mechanism is intrinsically vulnerable to a Layer Inflation Attack.
 -   Central Limit Theorem analysis of the mean score function
 -   Black-box Layer Inflation Attack
 -   Empirical validation on multiple LLMs
+  
 
 ## Core Insight
 
